@@ -1,5 +1,5 @@
 const express = require("express");
-
+const morgan = require("morgan");
 const PORT = 3001;
 
 let persons = [
@@ -29,7 +29,15 @@ const app = express();
 
 // Middleware
 app.use(express.json());
-
+// Morgan middleware
+morgan.token("content", (req, res) => {
+  return JSON.stringify(req.body);
+});
+app.use(
+  morgan(
+    ":method :url :status :res[content-length] - :response-time ms - :content"
+  )
+);
 // Info about the people in the phonebook
 app.get("/info", (req, res) => {
   res.send(
@@ -95,6 +103,15 @@ app.post("/api/persons", (req, res) => {
   persons.push(newPerson);
   res.json(newPerson);
 });
+
+// If an endpoint can't be found then run this. Ensure this is the last function to be fun
+const unknownEndpoint = (req, res) => {
+  res.status(404).json({
+    error: "Unknown endpoint",
+  });
+};
+
+app.use(unknownEndpoint);
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
