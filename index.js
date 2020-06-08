@@ -1,5 +1,6 @@
 const express = require("express");
 const morgan = require("morgan");
+const cors = require("cors");
 const PORT = 3001;
 
 let persons = [
@@ -29,13 +30,14 @@ const app = express();
 
 // Middleware
 app.use(express.json());
+app.use(cors());
 // Morgan middleware
 morgan.token("content", (req, res) => {
-  return JSON.stringify(req.body);
+  return req.method === "POST" ? JSON.stringify(req.body) : "";
 });
 app.use(
   morgan(
-    ":method :url :status :res[content-length] - :response-time ms - :content"
+    ":method :url :status :res[content-length] - :response-time ms :content"
   )
 );
 // Info about the people in the phonebook
