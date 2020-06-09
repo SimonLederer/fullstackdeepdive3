@@ -29,6 +29,7 @@ let persons = [
 const app = express();
 
 // Middleware
+app.use(express.static("build"));
 app.use(express.json());
 app.use(cors());
 // Morgan middleware
